@@ -4,7 +4,7 @@
  * Service worker: keeps the app shell in a cache so the app starts and works offline.
  * Bump VERSION with every release so installed apps pick up the new files.
  */
-const VERSION = "v2";
+const VERSION = "v3";
 const CACHE = `facilityplaner-${VERSION}`;
 
 const SHELL = [

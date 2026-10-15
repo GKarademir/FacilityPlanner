@@ -9,7 +9,7 @@ import * as Report from "./report.js";
 import * as Reminders from "./reminders.js";
 import { Store, Prefs } from "./store.js";
 import { icons } from "./icons.js";
-import { sheet, confirmDialog, alertDialog, actionMenu } from "./dialogs.js";
+import { sheet, confirmDialog, alertDialog, actionMenu, promptDialog } from "./dialogs.js";
 
 const esc = Report.esc;
 /** Escapes text for a <textarea> (keeps line breaks). */
@@ -854,6 +854,23 @@ async function checkBackupNotice() {
   if (ok) exportBackup().catch((e) => alertDialog("Datensicherung", `Fehler: ${e.message}`));
 }
 
+/** On start without a name, asks for it once; "Überspringen" asks again on the next start. */
+async function askForName() {
+  if (prefs.author !== "") return;
+  const name = await promptDialog({
+    title: "Dein Name",
+    message: "Wird bei Erledigungen gespeichert und in Berichten angezeigt. Später änderbar unter Einstellungen.",
+    placeholder: "Name",
+    autocomplete: "name",
+    confirm: "Speichern",
+    cancel: "Überspringen",
+  });
+  if (name !== null) {
+    prefs.set({ userName: name });
+    render();
+  }
+}
+
 async function importBackup(file) {
   const ok = await confirmDialog({
     title: "Sicherung importieren?",
@@ -1049,4 +1066,4 @@ navigator.storage?.persist?.().catch(() => {});
 render();
 Reminders.check(store, prefs);
 if (store.saveError) alertDialog("Fehler beim Speichern", store.saveError);
-else checkBackupNotice();
+else askForName().then(checkBackupNotice);

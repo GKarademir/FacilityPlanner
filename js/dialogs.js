@@ -90,6 +90,41 @@ export function confirmDialog({ title, message, confirm = "OK", destructive = fa
   });
 }
 
+/** An alert with one text field. Resolves the trimmed text, or null when cancelled. */
+export function promptDialog({ title, message, placeholder = "", autocomplete = "off", confirm = "OK", cancel = "Abbrechen" }) {
+  return new Promise((resolve) => {
+    const d = dialog("alert");
+    d.className = "alert";
+    d.innerHTML = `
+      <form method="dialog" novalidate>
+        <h2>${esc(title)}</h2>
+        ${message ? `<p>${esc(message)}</p>` : ""}
+        <label class="field"><input name="text" placeholder="${esc(placeholder)}" autocomplete="${esc(autocomplete)}"></label>
+        <div class="alert-buttons">
+          <button type="button" class="link" data-cancel>${esc(cancel)}</button>
+          <button type="submit" class="link strong" data-ok disabled>${esc(confirm)}</button>
+        </div>
+      </form>`;
+    const form = d.querySelector("form");
+    const input = form.elements.text;
+    const ok = form.querySelector("[data-ok]");
+    const done = (value) => {
+      d.close();
+      resolve(value);
+    };
+    input.oninput = () => (ok.disabled = input.value.trim() === "");
+    form.onsubmit = (e) => {
+      e.preventDefault();
+      if (input.value.trim() !== "") done(input.value.trim());
+    };
+    form.querySelector("[data-cancel]").onclick = () => done(null);
+    d.oncancel = () => resolve(null);
+    closeOnBackdrop(d, () => resolve(null));
+    d.showModal();
+    input.focus();
+  });
+}
+
 export function alertDialog(title, message) {
   return confirmDialog({ title, message, confirm: "OK", cancel: null });
 }

@@ -321,6 +321,8 @@ dialog.sheet {
 dialog.alert { width: 300px; border-radius: 14px; text-align: center; }
 dialog.alert h2 { font-size: 17px; margin: 20px 16px 4px; }
 dialog.alert p { font-size: 14px; margin: 0 16px 16px; color: var(--muted); }
+dialog.alert .field { padding: 0 16px 16px; }
+dialog.alert .field input[name] { background: var(--surface-2); border-radius: 8px; padding: 8px 10px; text-align: left; }
 .alert-buttons { display: flex; border-top: 0.5px solid var(--separator); }
 .alert-buttons button { flex: 1; min-height: 46px; }
 .alert-buttons button + button { border-left: 0.5px solid var(--separator); }
